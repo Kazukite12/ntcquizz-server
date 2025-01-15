@@ -1,0 +1,30 @@
+{
+  "name": "ntcquizz",
+  "version": "1.0.0",
+  "description": "ntcquizz server",
+  "main": "index.js",
+
+  "keywords": [],
+  "author": "Ntctraining.id",
+  "license": "ISC",
+  "scripts": {
+    "deploy": "firebase deploy --only functions:api"
+  },
+  "dependencies": {
+    "@socket.io/redis-adapter": "^8.3.0",
+    "@upstash/redis": "^1.34.3",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-status-monitor": "^1.3.4",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.11.5",
+    "nodemailer": "^6.9.16",
+    "nodemon": "^3.1.7",
+    "redis": "^4.7.0",
+    "socket.io": "^4.8.1"
+  }
+}

@@ -200,7 +200,6 @@ io.on('connection', (socket) => {
 
   socket.on('end_game', async(data)=> {
     const {room_id} = data
-
     try{
       const existsRoom = await redisClient.EXISTS(`room:${room_id}`)
       if (!existsRoom) {
@@ -210,20 +209,18 @@ io.on('connection', (socket) => {
       
       const currentTime = new Date().toISOString();
       //geting data from redis
-
-         
+    
       await redisClient.hSet(`room:${room_id}`, 'ended_at',currentTime)
 
       socket.to(room_id).emit('game_ended',"game is ended!!")
+      
 
+
+      //started logic to store in database
 
       const started_at = await redisClient.hGet(`room:${room_id}`, 'started_at')
-
       log.red(`${room_id} was started at ${started_at}`)
-
-      
       //store data in db
-
           // Fetch all question IDs for the room
           const questionIds = await redisClient.sMembers(`room:${room_id}:questions`);
       
@@ -269,11 +266,7 @@ io.on('connection', (socket) => {
               }
             );
           });
-      
-
     //end store data in db
-
-
     }catch(error) {
       log.red(error)
     }
@@ -460,11 +453,12 @@ io.on('connection', (socket) => {
           return { user_id: playerId, username, avatar_id: avatarId, points };
         })
       );
-  
+      
       // Sort leaderboard by points in descending order
       leaderboard.sort((a, b) => b.points - a.points);
   
       // Emit the leaderboard data back to the client
+      log.blue(JSON.stringify(leaderboard))
       socket.emit('leaderboard_data', leaderboard);
     } catch (error) {
       console.error('Error processing leaderboard:', error);
@@ -513,12 +507,10 @@ io.on('connection', (socket) => {
           log.red('Room not found for player:', player);
           return;
         }
-
         // Remove player from room and cleanup
         await redisClient.del(`player:${socket.id}`);
         await redisClient.del(`player:${player}`);
         await redisClient.sRem(`room:${room}:players`, player);
-
         // Retrieve updated player list
         const playerIds = await redisClient.sMembers(`room:${room}:players`);
         const playerData = await Promise.all(
@@ -530,7 +522,6 @@ io.on('connection', (socket) => {
             return { user_id: playerId, username, avatar_id: avatarId };
           })
         );
-
         // Notify remaining players in the room
         socket.to(room).emit('player_joined', playerData);
         return
